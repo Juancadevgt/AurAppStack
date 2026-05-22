@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Download, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/utils";
@@ -32,20 +31,8 @@ export default async function PurchasesPage() {
                 </p>
               </div>
               <div className="flex gap-2">
-                {p.apps?.delivery_type === "download" && p.access_key && (
-                  <a href={p.access_key} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <Download className="h-4 w-4" /> Descargar
-                    </Button>
-                  </a>
-                )}
-                <Link href={`/dashboard/support?app=${p.app_id}`}>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <MessageSquare className="h-4 w-4" /> Soporte
-                  </Button>
-                </Link>
-                <Link href={`/apps/${p.apps?.slug}`}>
-                  <Button size="sm">Ver app</Button>
+                <Link href={`/dashboard/purchases/${p.id}`}>
+                  <Button size="sm">Ver trámite</Button>
                 </Link>
               </div>
             </div>

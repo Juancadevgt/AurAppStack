@@ -1,9 +1,10 @@
-import { Package, Users, FileText, Settings } from "lucide-react";
+import { Package, Users, FileText, Settings, ClipboardList } from "lucide-react";
 import { Header } from "@/components/shared/header";
 import { DashboardNav } from "@/components/shared/dashboard-nav";
 
 const navItems = [
   { href: "/admin", label: "Resumen", icon: <FileText className="h-4 w-4" /> },
+  { href: "/admin/tramites", label: "Trámites", icon: <ClipboardList className="h-4 w-4" /> },
   { href: "/admin/apps", label: "Apps en revisión", icon: <Package className="h-4 w-4" /> },
   { href: "/admin/users", label: "Usuarios", icon: <Users className="h-4 w-4" /> },
   { href: "/admin/settings", label: "Configuración", icon: <Settings className="h-4 w-4" /> },
