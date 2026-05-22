@@ -29,14 +29,14 @@ export default async function PayoutsPage() {
             )}
           </CardTitle>
           <CardDescription>
-            Conecta tu cuenta Stripe para recibir tus ingresos automáticamente cada venta.
+            Conecta tu cuenta Stripe para recibir tus ingresos automáticamente con cada venta.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {connected ? (
             <>
               <p className="text-sm text-muted-foreground">
-                Tu cuenta está lista. El {100 - 20}% de cada venta llega automáticamente a tu cuenta bancaria via Stripe.
+                Tu cuenta está lista. El 80% de cada venta llega automáticamente a tu cuenta bancaria vía Stripe.
               </p>
               <form action="/api/stripe/connect/dashboard" method="POST">
                 <Button type="submit" variant="outline" className="gap-2">

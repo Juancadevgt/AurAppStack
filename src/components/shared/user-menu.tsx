@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, Settings, ShoppingBag, Package, Shield } from "lucide-react";
+import { LogOut, Settings, ShoppingBag, Store, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Profile } from "@/types/database";
 
@@ -14,11 +14,11 @@ const roleConfig = {
     dashboardLabel: "Mi cuenta",
   },
   developer: {
-    label: "Dev",
+    label: "Vendedor",
     color: "bg-purple-100 text-purple-700 border-purple-200",
-    icon: Package,
+    icon: Store,
     dashboardHref: "/developer/apps",
-    dashboardLabel: "Panel dev",
+    dashboardLabel: "Mis ventas",
   },
   admin: {
     label: "Admin",

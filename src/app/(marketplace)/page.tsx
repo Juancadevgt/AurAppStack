@@ -59,7 +59,7 @@ export default async function HomePage() {
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground">
               Puntos de venta, bots, agentes IA, analítica y herramientas listas para usar.
-              Todo de desarrolladores verificados, con soporte directo del autor.
+              Todo de vendedores verificados, con soporte directo del autor.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link href="/apps">
@@ -126,7 +126,7 @@ export default async function HomePage() {
               <p className="mb-2">Aún no hay apps publicadas.</p>
               {!user && (
                 <Link href="/register" className="text-primary hover:underline">
-                  ¿Eres desarrollador? Publica tu primera app →
+                  ¿Eres vendedor? Publica tu primera app →
                 </Link>
               )}
             </div>
@@ -157,7 +157,7 @@ export default async function HomePage() {
               </div>
               <h3 className="font-bold">Soporte del autor</h3>
               <p className="text-sm text-muted-foreground">
-                Cada app tiene soporte directo del desarrollador que la creó.
+                Cada app tiene soporte directo del vendedor que la creó.
               </p>
             </div>
             <div className="text-center space-y-3 p-6 rounded-lg border bg-background">

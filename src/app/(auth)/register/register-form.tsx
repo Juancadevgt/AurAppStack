@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 export function RegisterForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  // Internamente "developer" = vendedor en la UI
   const [role, setRole] = useState<"buyer" | "developer">("buyer");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -23,8 +24,6 @@ export function RegisterForm() {
     const fullName = formData.get("full_name") as string;
 
     const supabase = createClient();
-    // El trigger handle_new_user() de la DB lee `role` del raw_user_meta_data
-    // y crea el profile con el rol correcto + developer_profile si aplica.
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -42,7 +41,7 @@ export function RegisterForm() {
 
     toast.success(
       role === "developer"
-        ? "¡Cuenta de desarrollador creada! Revisa tu correo."
+        ? "¡Cuenta de vendedor creada! Revisa tu correo."
         : "¡Cuenta creada! Revisa tu correo para confirmar.",
     );
     router.push("/login");
@@ -68,7 +67,7 @@ export function RegisterForm() {
             role === "developer" ? "border-primary bg-primary/10" : "border-input"
           }`}
         >
-          👨‍💻 Desarrollador
+          💼 Vendedor
           <p className="text-xs text-muted-foreground mt-1">Vender mis apps</p>
         </button>
       </div>
@@ -87,7 +86,7 @@ export function RegisterForm() {
         <p className="text-xs text-muted-foreground">Mínimo 8 caracteres</p>
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Creando..." : `Crear cuenta de ${role === "buyer" ? "comprador" : "desarrollador"}`}
+        {loading ? "Creando..." : `Crear cuenta de ${role === "buyer" ? "comprador" : "vendedor"}`}
       </Button>
     </form>
   );

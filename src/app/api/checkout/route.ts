@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     const devProfile = (app as any).developer_profiles;
     if (!devProfile?.stripe_onboarding_completed || !devProfile.stripe_account_id) {
       return NextResponse.json(
-        { error: "El desarrollador no tiene pagos configurados aún" },
+        { error: "El vendedor no tiene pagos configurados aún" },
         { status: 400 },
       );
     }

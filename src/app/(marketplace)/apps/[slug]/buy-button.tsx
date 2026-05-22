@@ -33,7 +33,7 @@ export function BuyButton({ appId, priceCents, viewerRole, isOwnApp }: BuyButton
     return (
       <div className="rounded-md border bg-muted/50 p-3 text-sm text-muted-foreground flex items-start gap-2">
         <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-        <span>Las cuentas de desarrollador no pueden comprar apps. Crea una cuenta de comprador si necesitas adquirirla.</span>
+        <span>Las cuentas de vendedor no pueden comprar apps. Crea una cuenta de comprador si necesitas adquirirla.</span>
       </div>
     );
   }

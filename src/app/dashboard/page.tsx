@@ -31,7 +31,7 @@ export default async function DashboardPage() {
         {profile?.role === "developer" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">Panel desarrollador</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Panel vendedor</CardTitle>
             </CardHeader>
             <CardContent>
               <Link href="/developer/apps" className="text-primary hover:underline">Gestionar mis apps →</Link>

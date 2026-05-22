@@ -32,7 +32,7 @@ export async function sendPurchaseEmail(purchase: PurchaseData) {
           </a>
         </p>
         <p style="color:#666;font-size:14px;margin-top:30px;">
-          Si necesitas soporte de la app, contacta directamente al desarrollador desde tu panel.
+          Si necesitas soporte de la app, contacta directamente al vendedor desde tu panel.
         </p>
       </div>
     `,

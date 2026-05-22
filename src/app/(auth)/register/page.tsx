@@ -7,7 +7,7 @@ export default function RegisterPage() {
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Crear cuenta</CardTitle>
-        <CardDescription>Únete a AurAppStack como comprador o desarrollador</CardDescription>
+        <CardDescription>Únete a AurAppStack como comprador o vendedor</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <RegisterForm />

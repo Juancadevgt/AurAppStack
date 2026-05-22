@@ -33,7 +33,7 @@ export async function Footer() {
 
         {role !== "buyer" && (
           <div>
-            <h4 className="font-semibold mb-3 text-sm">Para devs</h4>
+            <h4 className="font-semibold mb-3 text-sm">Para vendedores</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {role === "developer" ? (
                 <>
@@ -44,7 +44,7 @@ export async function Footer() {
               ) : (
                 <>
                   <li><Link href="/sell" className="hover:text-primary">Vender tu app</Link></li>
-                  <li><Link href="/register" className="hover:text-primary">Crear cuenta dev</Link></li>
+                  <li><Link href="/register" className="hover:text-primary">Crear cuenta vendedor</Link></li>
                 </>
               )}
             </ul>

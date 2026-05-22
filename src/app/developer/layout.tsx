@@ -17,7 +17,7 @@ export default function DeveloperLayout({ children }: { children: React.ReactNod
       <div className="container py-6 flex-1 grid grid-cols-12 gap-6">
         <aside className="col-span-12 md:col-span-3 lg:col-span-2">
           <div className="sticky top-20">
-            <p className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-3">Desarrollador</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-3">Vendedor</p>
             <DashboardNav items={navItems} />
           </div>
         </aside>

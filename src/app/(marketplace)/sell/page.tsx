@@ -15,7 +15,7 @@ export default function SellPage() {
       <div className="max-w-3xl mx-auto text-center space-y-6 mb-16">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
           <Users className="h-3.5 w-3.5" />
-          <span>Para desarrolladores</span>
+          <span>Para vendedores</span>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold">
           Vende tu app a{" "}
@@ -29,7 +29,7 @@ export default function SellPage() {
         </p>
         <Link href="/register">
           <Button size="lg" className="gap-2">
-            Crear cuenta de desarrollador <ArrowRight className="h-4 w-4" />
+            Crear cuenta de vendedor <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>
       </div>
