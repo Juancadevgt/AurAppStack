@@ -30,12 +30,24 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
 
   if (!app) notFound();
 
-  const [{ data: developer }, { data: screenshots }, { data: reviews }, { data: category }] = await Promise.all([
+  const [{ data: developer }, { data: screenshots }, { data: reviews }, { data: category }, { data: { user: viewer } }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", app.developer_id).single(),
     supabase.from("app_screenshots").select("*").eq("app_id", app.id).order("display_order"),
     supabase.from("reviews").select("*, profiles(full_name, avatar_url)").eq("app_id", app.id).order("created_at", { ascending: false }).limit(10),
     app.category_id ? supabase.from("categories").select("*").eq("id", app.category_id).single() : Promise.resolve({ data: null }),
+    supabase.auth.getUser(),
   ]);
+
+  let viewerRole: "buyer" | "developer" | "admin" | null = null;
+  if (viewer) {
+    const { data: viewerProfile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", viewer.id)
+      .single();
+    viewerRole = viewerProfile?.role ?? null;
+  }
+  const isOwnApp = viewer?.id === app.developer_id;
 
   // Incrementa contador de vistas (fire-and-forget)
   supabase.rpc("increment_app_views", { app_id_param: app.id }).then(() => {});
@@ -121,7 +133,12 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
               </p>
             </div>
 
-            <BuyButton appId={app.id} priceCents={app.price_cents} />
+            <BuyButton
+              appId={app.id}
+              priceCents={app.price_cents}
+              viewerRole={viewerRole}
+              isOwnApp={isOwnApp}
+            />
 
             {app.demo_url && (
               <a href={app.demo_url} target="_blank" rel="noopener noreferrer">

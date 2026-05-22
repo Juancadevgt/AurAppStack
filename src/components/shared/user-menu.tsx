@@ -1,35 +1,62 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutDashboard, Package, LogOut, Settings, Shield } from "lucide-react";
+import { LogOut, Settings, ShoppingBag, Package, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Profile } from "@/types/database";
 
+const roleConfig = {
+  buyer: {
+    label: "Comprador",
+    color: "bg-blue-100 text-blue-700 border-blue-200",
+    icon: ShoppingBag,
+    dashboardHref: "/dashboard",
+    dashboardLabel: "Mi cuenta",
+  },
+  developer: {
+    label: "Dev",
+    color: "bg-purple-100 text-purple-700 border-purple-200",
+    icon: Package,
+    dashboardHref: "/developer/apps",
+    dashboardLabel: "Panel dev",
+  },
+  admin: {
+    label: "Admin",
+    color: "bg-red-100 text-red-700 border-red-200",
+    icon: Shield,
+    dashboardHref: "/admin",
+    dashboardLabel: "Panel admin",
+  },
+} as const;
+
 export function UserMenu({ profile }: { profile: Profile }) {
+  const config = roleConfig[profile.role];
+  const Icon = config.icon;
+
   return (
-    <div className="flex items-center gap-3">
-      {profile.role === "developer" && (
-        <Link href="/developer/apps">
-          <Button variant="ghost" size="sm">
-            <Package className="h-4 w-4" />
-            Mis apps
-          </Button>
-        </Link>
-      )}
-      {profile.role === "admin" && (
-        <Link href="/admin">
-          <Button variant="ghost" size="sm">
-            <Shield className="h-4 w-4" />
-            Admin
-          </Button>
-        </Link>
-      )}
-      <Link href="/dashboard">
-        <Button variant="ghost" size="sm">
-          <LayoutDashboard className="h-4 w-4" />
-          Dashboard
+    <div className="flex items-center gap-2">
+      <Link href={config.dashboardHref}>
+        <Button variant="ghost" size="sm" className="gap-2">
+          <Icon className="h-4 w-4" />
+          <span className="hidden sm:inline">{config.dashboardLabel}</span>
         </Button>
       </Link>
+
+      <div className="hidden md:flex items-center gap-2 px-2 py-1 rounded-full border bg-background">
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${config.color}`}>
+          {config.label}
+        </span>
+        <span className="text-sm font-medium pr-1">
+          {profile.full_name?.split(" ")[0] ?? "Usuario"}
+        </span>
+      </div>
+
+      <Link href="/dashboard/settings">
+        <Button variant="ghost" size="icon" title="Configuración">
+          <Settings className="h-4 w-4" />
+        </Button>
+      </Link>
+
       <form action="/auth/signout" method="POST">
         <Button variant="ghost" size="icon" type="submit" title="Cerrar sesión">
           <LogOut className="h-4 w-4" />

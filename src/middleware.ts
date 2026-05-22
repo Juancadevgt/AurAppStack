@@ -26,7 +26,6 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
 
-  // Rutas protegidas
   const isDashboard = path.startsWith("/dashboard");
   const isDeveloper = path.startsWith("/developer");
   const isAdmin = path.startsWith("/admin");
@@ -40,15 +39,32 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Verificación de rol admin
-  if (isAdmin && user) {
+  // Verificación de rol para rutas protegidas
+  if (user && (isDeveloper || isAdmin || isDashboard)) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
-    if (profile?.role !== "admin") {
+
+    const role = profile?.role;
+
+    // Admin solo accede admin
+    if (isAdmin && role !== "admin") {
       return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    // Developer area: solo developers y admins
+    if (isDeveloper && role !== "developer" && role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    // /dashboard: solo buyers (los devs van a /developer, admin a /admin)
+    if (isDashboard && role === "developer") {
+      return NextResponse.redirect(new URL("/developer/apps", request.url));
+    }
+    if (isDashboard && role === "admin") {
+      return NextResponse.redirect(new URL("/admin", request.url));
     }
   }
 

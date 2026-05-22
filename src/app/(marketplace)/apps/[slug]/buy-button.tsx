@@ -2,14 +2,41 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
-export function BuyButton({ appId, priceCents }: { appId: string; priceCents: number }) {
+interface BuyButtonProps {
+  appId: string;
+  priceCents: number;
+  viewerRole?: "buyer" | "developer" | "admin" | null;
+  isOwnApp?: boolean;
+}
+
+export function BuyButton({ appId, priceCents, viewerRole, isOwnApp }: BuyButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  // Es la app del propio desarrollador
+  if (isOwnApp) {
+    return (
+      <div className="rounded-md border bg-muted/50 p-3 text-sm text-muted-foreground flex items-start gap-2">
+        <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+        <span>Esta es tu app. No puedes comprarla.</span>
+      </div>
+    );
+  }
+
+  // Desarrolladores no pueden comprar
+  if (viewerRole === "developer") {
+    return (
+      <div className="rounded-md border bg-muted/50 p-3 text-sm text-muted-foreground flex items-start gap-2">
+        <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+        <span>Las cuentas de desarrollador no pueden comprar apps. Crea una cuenta de comprador si necesitas adquirirla.</span>
+      </div>
+    );
+  }
 
   async function handleBuy() {
     setLoading(true);

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowRight, Sparkles, Zap, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppCard } from "@/components/marketplace/app-card";
@@ -10,6 +11,20 @@ export const revalidate = 60; // ISR cada 60s
 
 export default async function HomePage() {
   const supabase = await createClient();
+
+  // Si está logueado, redirige al panel correspondiente
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role === "developer") redirect("/developer/apps");
+    if (profile?.role === "admin") redirect("/admin");
+    // buyer se queda en la home pública
+  }
 
   const { data: featuredApps } = await supabase
     .from("apps")
@@ -50,11 +65,13 @@ export default async function HomePage() {
                   Explorar apps <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/sell">
-                <Button size="lg" variant="outline">
-                  Vender mi app
-                </Button>
-              </Link>
+              {!user && (
+                <Link href="/sell">
+                  <Button size="lg" variant="outline">
+                    Vender mi app
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -100,9 +117,11 @@ export default async function HomePage() {
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <p>Aún no hay apps publicadas. ¡Sé el primero!</p>
-              <Link href="/register" className="text-primary hover:underline">
-                Crear cuenta de desarrollador →
-              </Link>
+              {!user && (
+                <Link href="/register" className="text-primary hover:underline">
+                  Crear cuenta de desarrollador →
+                </Link>
+              )}
             </div>
           )}
         </div>

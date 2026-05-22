@@ -23,7 +23,9 @@ export function RegisterForm() {
     const fullName = formData.get("full_name") as string;
 
     const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
+    // El trigger handle_new_user() de la DB lee `role` del raw_user_meta_data
+    // y crea el profile con el rol correcto + developer_profile si aplica.
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -38,13 +40,11 @@ export function RegisterForm() {
       return;
     }
 
-    // Si registró como developer, actualizo el role en profiles
-    if (role === "developer" && data.user) {
-      await supabase.from("profiles").update({ role: "developer" }).eq("id", data.user.id);
-      await supabase.from("developer_profiles").insert({ id: data.user.id });
-    }
-
-    toast.success("¡Cuenta creada! Revisa tu correo para confirmar.");
+    toast.success(
+      role === "developer"
+        ? "¡Cuenta de desarrollador creada! Revisa tu correo."
+        : "¡Cuenta creada! Revisa tu correo para confirmar.",
+    );
     router.push("/login");
   }
 
@@ -54,16 +54,22 @@ export function RegisterForm() {
         <button
           type="button"
           onClick={() => setRole("buyer")}
-          className={`p-3 rounded-md border text-sm ${role === "buyer" ? "border-primary bg-primary/10" : "border-input"}`}
+          className={`p-3 rounded-md border text-sm transition-colors ${
+            role === "buyer" ? "border-primary bg-primary/10" : "border-input"
+          }`}
         >
           🛒 Comprador
+          <p className="text-xs text-muted-foreground mt-1">Comprar apps</p>
         </button>
         <button
           type="button"
           onClick={() => setRole("developer")}
-          className={`p-3 rounded-md border text-sm ${role === "developer" ? "border-primary bg-primary/10" : "border-input"}`}
+          className={`p-3 rounded-md border text-sm transition-colors ${
+            role === "developer" ? "border-primary bg-primary/10" : "border-input"
+          }`}
         >
           👨‍💻 Desarrollador
+          <p className="text-xs text-muted-foreground mt-1">Vender mis apps</p>
         </button>
       </div>
 
@@ -81,7 +87,7 @@ export function RegisterForm() {
         <p className="text-xs text-muted-foreground">Mínimo 8 caracteres</p>
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Creando..." : "Crear cuenta"}
+        {loading ? "Creando..." : `Crear cuenta de ${role === "buyer" ? "comprador" : "desarrollador"}`}
       </Button>
     </form>
   );
