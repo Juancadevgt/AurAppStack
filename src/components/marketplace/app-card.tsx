@@ -5,10 +5,28 @@ import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import type { App } from "@/types/database";
 
-export function AppCard({ app }: { app: App }) {
+type AppWithVariants = App & {
+  has_variants?: boolean;
+  min_price_cents?: number | null;
+};
+
+export function AppCard({ app }: { app: AppWithVariants }) {
+  // Determinar etiqueta de precio
+  const priceLabel = (() => {
+    if (app.has_variants) {
+      if (app.min_price_cents != null && app.min_price_cents > 0) {
+        return `Desde ${formatPrice(app.min_price_cents, app.currency)}`;
+      }
+      return "Por cotización";
+    }
+    return app.price_cents === 0
+      ? "Gratis"
+      : formatPrice(app.price_cents, app.currency);
+  })();
+
   return (
     <Link href={`/apps/${app.slug}`} className="group">
-      <div className="rounded-lg border bg-card overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+      <div className="rounded-lg border bg-card overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 h-full flex flex-col">
         {app.cover_url ? (
           <div className="aspect-video relative bg-muted">
             <Image src={app.cover_url} alt={app.title} fill className="object-cover" />
@@ -20,7 +38,7 @@ export function AppCard({ app }: { app: App }) {
             )}
           </div>
         )}
-        <div className="p-4 space-y-2">
+        <div className="p-4 space-y-2 flex-1 flex flex-col">
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">
               {app.title}
@@ -35,11 +53,11 @@ export function AppCard({ app }: { app: App }) {
           <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
             {app.tagline}
           </p>
-          <div className="flex items-center justify-between pt-2">
-            <Badge variant="secondary">
-              {app.price_cents === 0 ? "Gratis" : formatPrice(app.price_cents, app.currency)}
-            </Badge>
-            <span className="text-xs text-muted-foreground">{app.purchases_count} ventas</span>
+          <div className="flex items-center justify-between pt-2 mt-auto">
+            <Badge variant="secondary">{priceLabel}</Badge>
+            <span className="text-xs text-muted-foreground">
+              {app.has_variants ? "Multi-opción" : `${app.purchases_count} ventas`}
+            </span>
           </div>
         </div>
       </div>

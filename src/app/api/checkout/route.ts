@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
   try {
-    const { appId } = await req.json();
+    const { appId, variantId } = await req.json();
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -18,14 +18,38 @@ export async function POST(req: Request) {
 
     if (!app) return NextResponse.json({ error: "App no encontrada" }, { status: 404 });
 
-    // App gratuita: crear purchase directo
-    if (app.price_cents === 0) {
+    // Si hay variantId, usar el precio de la variante
+    let priceCents = app.price_cents;
+    let productName = app.title;
+    let productDescription = app.tagline;
+
+    if (variantId) {
+      const { data: variant } = await supabase
+        .from("app_variants")
+        .select("*")
+        .eq("id", variantId)
+        .eq("app_id", app.id)
+        .eq("is_active", true)
+        .single();
+
+      if (!variant) return NextResponse.json({ error: "Variante no encontrada" }, { status: 404 });
+      if (variant.type !== "fixed") {
+        return NextResponse.json({ error: "Esta opción requiere cotización" }, { status: 400 });
+      }
+      priceCents = variant.price_cents;
+      productName = `${app.title} — ${variant.name}`;
+      productDescription = variant.description ?? app.tagline;
+    }
+
+    // App/variante gratuita: crear purchase directo
+    if (priceCents === 0) {
       const { commission_cents, developer_payout_cents } = calculateCommission(0);
       const { data: purchase } = await supabase
         .from("purchases")
         .insert({
           buyer_id: user.id,
           app_id: app.id,
+          variant_id: variantId ?? null,
           developer_id: app.developer_id,
           amount_cents: 0,
           commission_cents,
@@ -48,7 +72,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { commission_cents } = calculateCommission(app.price_cents);
+    const { commission_cents } = calculateCommission(priceCents);
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -58,11 +82,11 @@ export async function POST(req: Request) {
           price_data: {
             currency: app.currency.toLowerCase(),
             product_data: {
-              name: app.title,
-              description: app.tagline,
+              name: productName,
+              description: productDescription,
               images: app.icon_url ? [app.icon_url] : undefined,
             },
-            unit_amount: app.price_cents,
+            unit_amount: priceCents,
           },
           quantity: 1,
         },
@@ -70,9 +94,9 @@ export async function POST(req: Request) {
       payment_intent_data: {
         application_fee_amount: commission_cents,
         transfer_data: { destination: devProfile.stripe_account_id },
-        metadata: { app_id: app.id, buyer_id: user.id, developer_id: app.developer_id },
+        metadata: { app_id: app.id, variant_id: variantId ?? "", buyer_id: user.id, developer_id: app.developer_id },
       },
-      metadata: { app_id: app.id, buyer_id: user.id, developer_id: app.developer_id },
+      metadata: { app_id: app.id, variant_id: variantId ?? "", buyer_id: user.id, developer_id: app.developer_id },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/purchases?success={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/apps/${app.slug}?canceled=1`,
       customer_email: user.email,
@@ -82,10 +106,11 @@ export async function POST(req: Request) {
     await supabase.from("purchases").insert({
       buyer_id: user.id,
       app_id: app.id,
+      variant_id: variantId ?? null,
       developer_id: app.developer_id,
-      amount_cents: app.price_cents,
+      amount_cents: priceCents,
       commission_cents,
-      developer_payout_cents: app.price_cents - commission_cents,
+      developer_payout_cents: priceCents - commission_cents,
       stripe_checkout_session_id: session.id,
       status: "pending",
     });

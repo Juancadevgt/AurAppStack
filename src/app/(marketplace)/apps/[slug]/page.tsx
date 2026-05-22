@@ -4,6 +4,7 @@ import { Star, Download, Mail, ExternalLink, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BuyButton } from "./buy-button";
+import { VariantsList } from "./variants-list";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/utils";
 
@@ -30,11 +31,19 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
 
   if (!app) notFound();
 
-  const [{ data: developer }, { data: screenshots }, { data: reviews }, { data: category }, { data: { user: viewer } }] = await Promise.all([
+  const [
+    { data: developer },
+    { data: screenshots },
+    { data: reviews },
+    { data: category },
+    { data: variants },
+    { data: { user: viewer } },
+  ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", app.developer_id).single(),
     supabase.from("app_screenshots").select("*").eq("app_id", app.id).order("display_order"),
     supabase.from("reviews").select("*, profiles(full_name, avatar_url)").eq("app_id", app.id).order("created_at", { ascending: false }).limit(10),
     app.category_id ? supabase.from("categories").select("*").eq("id", app.category_id).single() : Promise.resolve({ data: null }),
+    supabase.from("app_variants").select("*").eq("app_id", app.id).eq("is_active", true).order("display_order"),
     supabase.auth.getUser(),
   ]);
 
@@ -48,8 +57,8 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
     viewerRole = viewerProfile?.role ?? null;
   }
   const isOwnApp = viewer?.id === app.developer_id;
+  const hasVariants = app.has_variants && variants && variants.length > 0;
 
-  // Incrementa contador de vistas (fire-and-forget)
   supabase.rpc("increment_app_views", { app_id_param: app.id }).then(() => {});
 
   return (
@@ -84,11 +93,28 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
           {/* Screenshots */}
           {screenshots && screenshots.length > 0 && (
             <div className="grid grid-cols-2 gap-3">
-              {screenshots.map((s) => (
+              {screenshots.map((s: any) => (
                 <div key={s.id} className="aspect-video rounded-lg overflow-hidden border bg-muted relative">
                   <Image src={s.url} alt={s.caption ?? ""} fill className="object-cover" />
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Variantes (sub-tarjetas) */}
+          {hasVariants && (
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Opciones disponibles</h2>
+              <p className="text-muted-foreground text-sm">
+                Selecciona la opción que mejor se ajusta a lo que necesitas.
+              </p>
+              <VariantsList
+                variants={variants}
+                appId={app.id}
+                appSlug={app.slug}
+                viewerRole={viewerRole}
+                isOwnApp={isOwnApp}
+              />
             </div>
           )}
 
@@ -118,7 +144,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">Aún no hay reseñas. ¡Sé el primero!</p>
+              <p className="text-muted-foreground text-sm">Aún no hay reseñas.</p>
             )}
           </div>
         </div>
@@ -127,18 +153,30 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
         <div className="space-y-4">
           <div className="border rounded-lg p-6 sticky top-20 space-y-4">
             <div>
-              <p className="text-sm text-muted-foreground">Precio</p>
+              <p className="text-sm text-muted-foreground">
+                {hasVariants ? "Precios" : "Precio"}
+              </p>
               <p className="text-3xl font-bold">
-                {app.price_cents === 0 ? "Gratis" : formatPrice(app.price_cents, app.currency)}
+                {hasVariants
+                  ? (app.min_price_cents && app.min_price_cents > 0
+                      ? `Desde ${formatPrice(app.min_price_cents, app.currency)}`
+                      : "Por cotización")
+                  : (app.price_cents === 0 ? "Gratis" : formatPrice(app.price_cents, app.currency))}
               </p>
             </div>
 
-            <BuyButton
-              appId={app.id}
-              priceCents={app.price_cents}
-              viewerRole={viewerRole}
-              isOwnApp={isOwnApp}
-            />
+            {hasVariants ? (
+              <a href="#opciones">
+                <Button size="lg" className="w-full">Ver opciones</Button>
+              </a>
+            ) : (
+              <BuyButton
+                appId={app.id}
+                priceCents={app.price_cents}
+                viewerRole={viewerRole}
+                isOwnApp={isOwnApp}
+              />
+            )}
 
             {app.demo_url && (
               <a href={app.demo_url} target="_blank" rel="noopener noreferrer">
@@ -161,7 +199,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
 
             {developer && (
               <div className="border-t pt-4">
-                <p className="text-xs text-muted-foreground mb-2">Desarrollado por</p>
+                <p className="text-xs text-muted-foreground mb-2">Vendido por</p>
                 <div className="flex items-center gap-2">
                   {developer.avatar_url && (
                     <Image src={developer.avatar_url} alt="" width={32} height={32} className="rounded-full" />
