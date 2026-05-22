@@ -1,20 +1,18 @@
 export const APP_NAME = "AurAppStack";
 export const APP_DESCRIPTION =
-  "Marketplace de aplicaciones: bots, POS, plantillas n8n y más. Compra software listo para usar.";
+  "Apps para emprendedores. Punto de venta, bots, agentes IA, analítica y más herramientas listas para potenciar tu negocio.";
+export const APP_TAGLINE = "El marketplace de apps para emprendedores";
 
 export const COMMISSION_PCT = Number(process.env.MARKETPLACE_COMMISSION_PCT ?? "20");
 
 export const APP_CATEGORIES = [
-  { slug: "whatsapp-bots", name: "Bots de WhatsApp", icon: "MessageCircle" },
-  { slug: "pos", name: "Punto de Venta (POS)", icon: "ShoppingCart" },
-  { slug: "crm", name: "CRM", icon: "Users" },
-  { slug: "automations", name: "Automatizaciones (n8n, Make)", icon: "Workflow" },
-  { slug: "ai-agents", name: "Agentes IA", icon: "Bot" },
-  { slug: "ecommerce", name: "E-commerce", icon: "Store" },
-  { slug: "analytics", name: "Analítica", icon: "BarChart3" },
-  { slug: "productivity", name: "Productividad", icon: "Zap" },
-  { slug: "templates", name: "Plantillas", icon: "Layout" },
-  { slug: "other", name: "Otros", icon: "Package" },
+  { slug: "pos", name: "Puntos de venta", icon: "ShoppingCart", emoji: "🛒" },
+  { slug: "bots", name: "Bots", icon: "Bot", emoji: "🤖" },
+  { slug: "ai-agents", name: "Agentes IA", icon: "Sparkles", emoji: "✨" },
+  { slug: "analytics", name: "Analítica", icon: "BarChart3", emoji: "📊" },
+  { slug: "support", name: "Soporte técnico", icon: "Headphones", emoji: "🎧" },
+  { slug: "tools", name: "Herramientas", icon: "Wrench", emoji: "🛠️" },
+  { slug: "other", name: "Otros", icon: "Package", emoji: "📦" },
 ] as const;
 
 export const DELIVERY_TYPES = [

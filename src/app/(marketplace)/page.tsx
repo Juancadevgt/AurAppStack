@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, Sparkles, Zap, Shield } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, Shield, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppCard } from "@/components/marketplace/app-card";
 import { NewsletterSignup } from "@/components/marketplace/newsletter-signup";
@@ -48,16 +48,18 @@ export default async function HomePage() {
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>El marketplace de apps listas para usar</span>
+              <span>El marketplace de apps para emprendedores</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Compra software{" "}
+              Apps para{" "}
               <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                listo para usar
-              </span>
+                emprender
+              </span>{" "}
+              y crecer tu negocio
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground">
-              Bots de WhatsApp, sistemas POS, automatizaciones, agentes IA y más. Todo de desarrolladores verificados, con soporte directo.
+              Puntos de venta, bots, agentes IA, analítica y herramientas listas para usar.
+              Todo de desarrolladores verificados, con soporte directo del autor.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link href="/apps">
@@ -80,15 +82,20 @@ export default async function HomePage() {
       {/* CATEGORÍAS */}
       <section className="py-16 border-y bg-muted/30">
         <div className="container">
-          <h2 className="text-2xl font-bold mb-8">Explora por categoría</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {APP_CATEGORIES.slice(0, 10).map((cat) => (
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold mb-2">¿Qué necesita tu negocio?</h2>
+            <p className="text-muted-foreground">Encuentra la herramienta perfecta por categoría</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 max-w-5xl mx-auto">
+            {APP_CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
-                className="p-4 rounded-lg border bg-background hover:border-primary transition-colors text-center"
+                className="p-5 rounded-lg border bg-background hover:border-primary hover:shadow-md transition-all text-center group"
               >
-                <div className="text-2xl mb-2">📦</div>
+                <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">
+                  {cat.emoji}
+                </div>
                 <p className="text-sm font-medium">{cat.name}</p>
               </Link>
             ))}
@@ -102,7 +109,7 @@ export default async function HomePage() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold">Apps más vendidas</h2>
-              <p className="text-muted-foreground">Los favoritos de la comunidad</p>
+              <p className="text-muted-foreground">Las favoritas de otros emprendedores</p>
             </div>
             <Link href="/apps">
               <Button variant="ghost" className="gap-1">
@@ -115,11 +122,11 @@ export default async function HomePage() {
               {featuredApps.map((app) => <AppCard key={app.id} app={app} />)}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p>Aún no hay apps publicadas. ¡Sé el primero!</p>
+            <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
+              <p className="mb-2">Aún no hay apps publicadas.</p>
               {!user && (
                 <Link href="/register" className="text-primary hover:underline">
-                  Crear cuenta de desarrollador →
+                  ¿Eres desarrollador? Publica tu primera app →
                 </Link>
               )}
             </div>
@@ -130,17 +137,21 @@ export default async function HomePage() {
       {/* WHY */}
       <section className="py-16 bg-muted/30 border-y">
         <div className="container">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center space-y-3">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold mb-2">¿Por qué AurAppStack?</h2>
+            <p className="text-muted-foreground">El stack que tu negocio necesita, sin meses de desarrollo</p>
+          </div>
+          <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <div className="text-center space-y-3 p-6 rounded-lg border bg-background">
               <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary">
                 <Zap className="h-6 w-6" />
               </div>
               <h3 className="font-bold">Listo para usar</h3>
               <p className="text-sm text-muted-foreground">
-                Software probado. Sin meses de desarrollo: instalas, configuras y vendes.
+                Sin meses de desarrollo. Compra, configura y empieza a vender hoy.
               </p>
             </div>
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-3 p-6 rounded-lg border bg-background">
               <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary">
                 <Shield className="h-6 w-6" />
               </div>
@@ -149,13 +160,22 @@ export default async function HomePage() {
                 Cada app tiene soporte directo del desarrollador que la creó.
               </p>
             </div>
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-3 p-6 rounded-lg border bg-background">
+              <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary">
+                <TrendingUp className="h-6 w-6" />
+              </div>
+              <h3 className="font-bold">Escala con tu negocio</h3>
+              <p className="text-sm text-muted-foreground">
+                Empieza simple. Suma funciones cuando tu emprendimiento crezca.
+              </p>
+            </div>
+            <div className="text-center space-y-3 p-6 rounded-lg border bg-background">
               <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary">
                 <Sparkles className="h-6 w-6" />
               </div>
               <h3 className="font-bold">Pagos seguros</h3>
               <p className="text-sm text-muted-foreground">
-                Procesamos pagos con Stripe. Garantía de devolución.
+                Procesamos con Stripe. Garantía de devolución si no te sirve.
               </p>
             </div>
           </div>
@@ -166,7 +186,7 @@ export default async function HomePage() {
       {newApps && newApps.length > 0 && (
         <section className="py-16">
           <div className="container">
-            <h2 className="text-2xl font-bold mb-8">Recién publicadas</h2>
+            <h2 className="text-2xl font-bold mb-8">🆕 Recién publicadas</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {newApps.map((app) => <AppCard key={app.id} app={app} />)}
             </div>
@@ -179,10 +199,11 @@ export default async function HomePage() {
         <div className="container">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-2xl md:text-3xl font-bold">
-              Suscríbete y recibe las nuevas apps + descuentos exclusivos
+              Apps nuevas + descuentos exclusivos para emprendedores
             </h2>
             <p className="text-muted-foreground">
-              Sin spam. Solo notificaciones cuando hay apps nuevas que te puedan interesar.
+              Suscríbete y te avisamos cuando lleguen herramientas que te puedan servir.
+              Sin spam, lo prometemos.
             </p>
             <NewsletterSignup />
           </div>
