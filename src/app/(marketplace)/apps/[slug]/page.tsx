@@ -58,6 +58,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
   }
   const isOwnApp = viewer?.id === app.developer_id;
   const hasVariants = app.has_variants && variants && variants.length > 0;
+  const isComingSoon = app.availability === "coming_soon";
 
   supabase.rpc("increment_app_views", { app_id_param: app.id }).then(() => {});
 
@@ -70,8 +71,19 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
             {app.icon_url && (
               <Image src={app.icon_url} alt={app.title} width={80} height={80} className="rounded-xl shrink-0" />
             )}
-            <div className="space-y-2">
-              {category && <Badge variant="secondary">{category.name}</Badge>}
+            <div className="space-y-2 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                {category && <Badge variant="secondary">{category.name}</Badge>}
+                {isComingSoon ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold uppercase tracking-wide rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
+                    ⏳ Próximamente
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold uppercase tracking-wide rounded-full bg-green-100 text-green-800 border border-green-300">
+                    ✓ Disponible
+                  </span>
+                )}
+              </div>
               <h1 className="text-3xl font-bold">{app.title}</h1>
               <p className="text-lg text-muted-foreground">{app.tagline}</p>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -101,8 +113,22 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
             </div>
           )}
 
-          {/* Variantes (sub-tarjetas) */}
-          {hasVariants && (
+          {/* Banner de Próximamente */}
+          {isComingSoon && (
+            <div className="border-2 border-yellow-300 bg-yellow-50 rounded-lg p-4 flex items-start gap-3">
+              <span className="text-2xl">⏳</span>
+              <div>
+                <h3 className="font-bold text-yellow-900">Servicio en desarrollo</h3>
+                <p className="text-sm text-yellow-800">
+                  Este servicio aún no está disponible para compra. Suscríbete al newsletter
+                  para recibir un aviso cuando esté listo.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Variantes (sub-tarjetas) — solo si está disponible */}
+          {hasVariants && !isComingSoon && (
             <div className="space-y-4">
               <h2 className="text-2xl font-bold">Opciones disponibles</h2>
               <p className="text-muted-foreground text-sm">
@@ -165,7 +191,11 @@ export default async function AppDetailPage({ params }: { params: Promise<{ slug
               </p>
             </div>
 
-            {hasVariants ? (
+            {isComingSoon ? (
+              <Button size="lg" className="w-full" disabled>
+                Próximamente — no disponible aún
+              </Button>
+            ) : hasVariants ? (
               <a href="#opciones">
                 <Button size="lg" className="w-full">Ver opciones</Button>
               </a>

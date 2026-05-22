@@ -18,6 +18,13 @@ export async function POST(req: Request) {
 
     if (!app) return NextResponse.json({ error: "App no encontrada" }, { status: 404 });
 
+    if (app.availability === "coming_soon") {
+      return NextResponse.json(
+        { error: "Este servicio aún no está disponible. Estará pronto." },
+        { status: 400 },
+      );
+    }
+
     // Si hay variantId, usar el precio de la variante
     let priceCents = app.price_cents;
     let productName = app.title;

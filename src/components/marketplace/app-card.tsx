@@ -5,14 +5,17 @@ import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import type { App } from "@/types/database";
 
-type AppWithVariants = App & {
+type AppWithExtras = App & {
   has_variants?: boolean;
   min_price_cents?: number | null;
+  availability?: "available" | "coming_soon";
 };
 
-export function AppCard({ app }: { app: AppWithVariants }) {
-  // Determinar etiqueta de precio
+export function AppCard({ app }: { app: AppWithExtras }) {
+  const isComingSoon = app.availability === "coming_soon";
+
   const priceLabel = (() => {
+    if (isComingSoon) return "Próximamente";
     if (app.has_variants) {
       if (app.min_price_cents != null && app.min_price_cents > 0) {
         return `Desde ${formatPrice(app.min_price_cents, app.currency)}`;
@@ -26,13 +29,26 @@ export function AppCard({ app }: { app: AppWithVariants }) {
 
   return (
     <Link href={`/apps/${app.slug}`} className="group">
-      <div className="rounded-lg border bg-card overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 h-full flex flex-col">
+      <div className={`relative rounded-lg border bg-card overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 h-full flex flex-col ${isComingSoon ? "opacity-90" : ""}`}>
+        {/* Badge de disponibilidad en esquina superior derecha */}
+        <div className="absolute top-2 right-2 z-10">
+          {isComingSoon ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300 shadow-sm">
+              ⏳ Próximamente
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide rounded-full bg-green-100 text-green-800 border border-green-300 shadow-sm">
+              ✓ Disponible
+            </span>
+          )}
+        </div>
+
         {app.cover_url ? (
-          <div className="aspect-video relative bg-muted">
+          <div className={`aspect-video relative bg-muted ${isComingSoon ? "grayscale-[60%]" : ""}`}>
             <Image src={app.cover_url} alt={app.title} fill className="object-cover" />
           </div>
         ) : (
-          <div className="aspect-video bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+          <div className={`aspect-video bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center ${isComingSoon ? "grayscale-[60%]" : ""}`}>
             {app.icon_url && (
               <Image src={app.icon_url} alt={app.title} width={64} height={64} className="rounded-xl" />
             )}
@@ -54,9 +70,9 @@ export function AppCard({ app }: { app: AppWithVariants }) {
             {app.tagline}
           </p>
           <div className="flex items-center justify-between pt-2 mt-auto">
-            <Badge variant="secondary">{priceLabel}</Badge>
+            <Badge variant={isComingSoon ? "outline" : "secondary"}>{priceLabel}</Badge>
             <span className="text-xs text-muted-foreground">
-              {app.has_variants ? "Multi-opción" : `${app.purchases_count} ventas`}
+              {isComingSoon ? "—" : app.has_variants ? "Multi-opción" : `${app.purchases_count} ventas`}
             </span>
           </div>
         </div>
