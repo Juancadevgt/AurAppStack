@@ -1,7 +1,7 @@
 export const APP_NAME = "AurAppStack";
 export const APP_DESCRIPTION =
-  "Apps para emprendedores. Punto de venta, bots, agentes IA, analítica y más herramientas listas para potenciar tu negocio.";
-export const APP_TAGLINE = "El marketplace de apps para emprendedores";
+  "Apps y servicios para emprendedores. Punto de venta, bots, agentes IA, analítica, soporte técnico, desarrollo a medida y más.";
+export const APP_TAGLINE = "El marketplace de apps y servicios para emprendedores";
 
 export const COMMISSION_PCT = Number(process.env.MARKETPLACE_COMMISSION_PCT ?? "20");
 
@@ -12,6 +12,7 @@ export const APP_CATEGORIES = [
   { slug: "analytics", name: "Analítica", icon: "BarChart3", emoji: "📊" },
   { slug: "support", name: "Soporte técnico", icon: "Headphones", emoji: "🎧" },
   { slug: "tools", name: "Herramientas", icon: "Wrench", emoji: "🛠️" },
+  { slug: "services", name: "Servicios", icon: "Briefcase", emoji: "💼" },
   { slug: "other", name: "Otros", icon: "Package", emoji: "📦" },
 ] as const;
 
